@@ -109,7 +109,8 @@ class CandidateList(Resource):
         search_param = args['search']
         query = CandidateModel.query
         if search_param:
-            query = (query.filter(CandidateModel.name.contains(search_param)))
+            param = f'%{search_param}%'
+            query = (query.filter(CandidateModel.name.ilike(param)))
 
         query = query.order_by('id')
         candidates = query.all()
