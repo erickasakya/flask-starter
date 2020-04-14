@@ -43,7 +43,7 @@ jobs:
             docker tag candidates_server:latest nextonlabs/candidates-backend:$GIT_SHA
             docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
             docker push nextonlabs/candidates-backend:$GIT_SHA
-            docker tag candidates_server:latest nextonlabs/candidates-backend:$CIRCLE_BRANCH
+            docker tag candidates_server:latest nextonlabs/candidates-backend:dev
 
 workflows:
   version: 2
