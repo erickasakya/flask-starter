@@ -1,8 +1,7 @@
 version: 2
 jobs:
   unit-test:
-    docker:
-      - image: circleci/python:3.7
+    machine: true
     steps:
       - checkout
       - run:
