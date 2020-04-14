@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  tests:
+  build:
     machine: true
     steps:
       - checkout
@@ -45,10 +45,10 @@ workflows:
 
   build-deploy:
     jobs:
-      - tests
+      - build
       - push:
           requires:
-            - tests
+            - build
           filters:
             branches:
               only: ci-cd
