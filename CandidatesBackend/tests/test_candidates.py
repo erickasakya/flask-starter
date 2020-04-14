@@ -2,7 +2,8 @@
 Test the Candidates operations
 
 
-Use the candidate_fixture to have data to retrieve, it generates three candidates
+Use the candidate_fixture to have data to retrieve,
+it generates three candidates
 '''
 from unittest.mock import ANY
 import http.client

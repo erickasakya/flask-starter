@@ -26,13 +26,13 @@ authentication_parser.add_argument('Authorization', location='headers',
 
 candidate_parser = authentication_parser.copy()
 candidate_parser.add_argument('name', type=str, required=True,
-                            help='Name of the candidate')
+                              help='Name of the candidate')
 candidate_parser.add_argument('title', type=str, required=True,
-                            help='Title of the candidate')
+                              help='Title of the candidate')
 candidate_parser.add_argument('location', type=str, required=True,
-                            help='Location of the candidate')
+                              help='Location of the candidate')
 candidate_parser.add_argument('profile_url', type=str, required=True,
-                            help='Profile URL of the candidate')
+                              help='Profile URL of the candidate')
 
 model = {
     'id': fields.Integer(),
@@ -60,10 +60,10 @@ class MeCandidatesListCreate(Resource):
         username = authentication_header_parser(args['Authorization'])
 
         candidates = (CandidateModel
-                    .query
-                    .filter(CandidateModel.username == username)
-                    .order_by('id')
-                    .all())
+                      .query
+                      .filter(CandidateModel.username == username)
+                      .order_by('id')
+                      .all())
         return candidates
 
     @api_namespace.doc('create_candidate')
