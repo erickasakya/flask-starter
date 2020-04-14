@@ -27,7 +27,7 @@ def candidate_fixture(client):
     candidate_ids = []
     for _ in range(3):
         candidate = {
-            'name': fake.text(240),
+            'name': fake.text(50),
             'title': fake.text(240),
             'location': fake.text(240),
             'profile_url': fake.text(240),

@@ -33,11 +33,13 @@ RUN mkdir -p /opt/code/db
 # Add postgres setup
 ADD ./docker/db/postgres-setup.sh /opt/code/db/
 RUN ["chmod", "+x","/opt/code/db/postgres-setup.sh"]
+RUN /opt/code/db/postgres-setup.sh
 
 ## Install our code to prepare the DB
 ADD ./CandidatesBackend/requirements.txt /opt/code
 
 RUN pip3 install -r requirements.txt
+RUN pip3 install psycopg2
 
 ## Need to import all the code, due dependencies to initialise the DB
 ADD ./CandidatesBackend/ /opt/code/
@@ -46,6 +48,9 @@ ADD ./docker/db/* /opt/code/db/
 
 ## get the db ready
 RUN ["chmod", "+x","/opt/code/db/prepare_db.sh"]
+RUN ["chmod", "+x","/opt/code/db/start_postgres.sh"]
+RUN ["chmod", "+x","/opt/code/db/stop_postgres.sh"]
+RUN /opt/code/db/prepare_db.sh
 
 # Start the database in normal operation
 USER postgres
