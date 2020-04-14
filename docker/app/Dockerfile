@@ -25,6 +25,7 @@ RUN pip3 install uwsgi==2.0.18
 # Install other dependencies
 COPY CandidatesBackend/requirements.txt /opt/
 RUN pip3 install -r /opt/requirements.txt
+RUN pip3 install psycopg2
 
 ########
 # This image is the runtime, will copy the dependencies from the other

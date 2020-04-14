@@ -40,6 +40,12 @@ services:
         ports:
             - "5432:5432"
 
+    static-analysis:
+        build:
+            dockerfile: docker/app/Dockerfile
+            context: .
+        entrypoint: flake8
+
     # Producion related
     server:
         env_file: environment.env

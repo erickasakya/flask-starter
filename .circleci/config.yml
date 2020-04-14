@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  unit-test:
+  tests:
     machine: true
     steps:
       - checkout
@@ -23,15 +23,6 @@ jobs:
             docker-compose build db
             docker-compose build test-postgresql
             docker-compose run test-postgresql
-
-  static-analysis:
-    docker:
-      - image: circleci/python:3.7
-    steps:
-      - checkout
-      - run:
-          command: |
-            cd CandidatesBackend
             docker-compose build static-analysis
             docker-compose run static-analysis
 
@@ -54,12 +45,10 @@ workflows:
 
   build-deploy:
     jobs:
-      - unit-test
-      - static-analysis
+      - tests
       - push:
           requires:
-            - unit-test
-            - static-analysis
+            - tests
           filters:
             branches:
               only: ci-cd

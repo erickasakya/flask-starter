@@ -32,8 +32,7 @@ WORKDIR /opt/code
 RUN mkdir -p /opt/code/db
 # Add postgres setup
 ADD ./docker/db/postgres-setup.sh /opt/code/db/
-RUN  chmod 666 /opt/code/db/postgres-setup.sh \
-    /opt/code/db/postgres-setup.sh
+RUN ["chmod", "+x","/opt/code/db/postgres-setup.sh"]
 
 ## Install our code to prepare the DB
 ADD ./CandidatesBackend/requirements.txt /opt/code
@@ -46,8 +45,7 @@ ADD ./CandidatesBackend/ /opt/code/
 ADD ./docker/db/* /opt/code/db/
 
 ## get the db ready
-RUN chmod 666 /opt/code/db/postgres-setup.sh \
-    /opt/code/db/prepare_db.sh
+RUN ["chmod", "+x","/opt/code/db/prepare_db.sh"]
 
 # Start the database in normal operation
 USER postgres
