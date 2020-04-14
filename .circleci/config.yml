@@ -1,0 +1,53 @@
+version: 2
+jobs:
+  unit-test:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          command: |
+            cd CandidatesBackend
+            docker-compose build db
+            docker-compose build test-postgresql
+            docker-compose run test-postgresql
+
+  static-analysis:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          command: |
+            cd CandidatesBackend
+            docker-compose build static-analysis
+            docker-compose run static-analysis
+
+  push:
+      machine: true
+      steps:
+        - checkout
+        - run:
+            name: Build and push Docker image to development
+            command: |
+              cd CandidatesBackend
+              docker-compose build server
+              docker tag candidates_server:latest nextonlabs/candidates-backend:$GIT_SHA
+              docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
+              docker push nextonlabs/candidates-backend:$GIT_SHA
+              docker tag candidates_server:latest nextonlabs/candidates-backend:$CIRCLE_BRANCH
+
+workflows:
+  version: 2
+
+  build-deploy:
+    jobs:
+      - unit-test
+      - static-analysis
+      - push:
+          requires:
+            - unit-test
+            - static-analysis
+          filters:
+            branches:
+              only: ci-cd
