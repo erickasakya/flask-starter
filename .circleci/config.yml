@@ -17,9 +17,9 @@ _docker-compose-install: &compose
 jobs:
   build:
     machine: true
-    <<: *compose
     steps:
       - checkout
+      - run: *compose
       - run:
           name: Run tests and static code analysis
           command: |
@@ -32,9 +32,9 @@ jobs:
 
   push:
     machine: true
-    <<: *compose
     steps:
       - checkout
+      - run: *compose
       - run:
           name: Build and push Docker image to development
           command: |
