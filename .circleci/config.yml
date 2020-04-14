@@ -1,7 +1,7 @@
 version: 2
 
-_docker-compose-install: &compose
-  - run:
+_run:
+  install-compose: &install-compose
       command: |
         sudo rm /usr/local/bin/docker-compose
         curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -19,7 +19,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: *compose
+      - run: *install-compose
       - run:
           name: Run tests and static code analysis
           command: |
@@ -34,7 +34,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: *compose
+      - run: *install-compose
       - run:
           name: Build and push Docker image to development
           command: |
