@@ -1,0 +1,58 @@
+version: 2
+
+_run:
+  install-compose: &install-compose
+      command: |
+        sudo rm /usr/local/bin/docker-compose
+        curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+        chmod +x docker-compose
+        sudo mv docker-compose /usr/local/bin
+        docker --version
+        docker-compose version
+        export GIT_SHA=`git rev-parse --short HEAD`
+        echo "Building commit $GIT_SHA"
+      environment:
+        DOCKER_COMPOSE_VERSION: 1.23.2
+
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: *install-compose
+      - run:
+          name: Run tests and static code analysis
+          command: |
+            cd CandidatesBackend
+            docker-compose build db
+            docker-compose build test-postgresql
+            docker-compose run test-postgresql
+            docker-compose build static-analysis
+            docker-compose run static-analysis
+
+  push:
+    machine: true
+    steps:
+      - checkout
+      - run: *install-compose
+      - run:
+          name: Build and push Docker image to development
+          command: |
+            cd CandidatesBackend
+            docker-compose build server
+            docker tag candidates_server:latest nextonlabs/candidates-backend:dev
+            docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
+            docker push nextonlabs/candidates-backend:dev
+
+workflows:
+  version: 2
+
+  build-deploy:
+    jobs:
+      - build
+      - push:
+          requires:
+            - build
+          filters:
+            branches:
+              only: microservices

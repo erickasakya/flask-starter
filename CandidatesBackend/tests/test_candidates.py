@@ -2,7 +2,8 @@
 Test the Candidates operations
 
 
-Use the candidate_fixture to have data to retrieve, it generates three candidates
+Use the candidate_fixture to have data to retrieve,
+it generates three candidates
 '''
 from unittest.mock import ANY
 import http.client
@@ -17,7 +18,7 @@ fake = Faker()
 def test_create_me_candidate(client):
     new_candidate = {
         'username': fake.name(),
-        'name': fake.text(240),
+        'name': fake.text(50),
         'title': fake.text(240),
         'location': fake.text(240),
         'profile_url': fake.text(240),
@@ -48,7 +49,7 @@ def test_create_me_candidate(client):
 def test_create_me_unauthorized(client):
     new_candidate = {
         'username': fake.name(),
-        'name': fake.text(240),
+        'name': fake.text(50),
         'title': fake.text(240),
         'location': fake.text(240),
         'profile_url': fake.text(240),
@@ -59,7 +60,7 @@ def test_create_me_unauthorized(client):
 
 def test_list_me_candidates(client, candidate_fixture):
     username = fake.name()
-    name = fake.text(240)
+    name = fake.text(50)
     title = fake.text(240)
     location = fake.text(240)
     profile_url = fake.text(240)
