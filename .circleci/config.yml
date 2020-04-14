@@ -55,4 +55,4 @@ workflows:
             - build
           filters:
             branches:
-              only: ci-cd
+              only: microservices
