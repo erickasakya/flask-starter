@@ -7,7 +7,7 @@ services:
             - PYTHONDONTWRITEBYTECODE=1
         build:
             dockerfile: docker/app/Dockerfile
-            context: .
+            context: ..
         entrypoint: pytest
         volumes:
             - ./CandidatesBackend:/opt/code
@@ -18,7 +18,7 @@ services:
             - PYTHONDONTWRITEBYTECODE=1
         build:
             dockerfile: docker/app/Dockerfile
-            context: .
+            context: ..
         entrypoint: pytest
         depends_on:
             - db
@@ -27,8 +27,8 @@ services:
 
     db:
         build:
-            context: .
-            dockerfile: ./docker/db/Dockerfile
+            context: ..
+            dockerfile: docker/db/Dockerfile
             args:
                 # These values should be in sync with environment
                 # for development. If you change them, you'll
@@ -43,7 +43,7 @@ services:
     static-analysis:
         build:
             dockerfile: docker/app/Dockerfile
-            context: .
+            context: ..
         entrypoint: flake8
 
     # Producion related
@@ -51,7 +51,7 @@ services:
         env_file: environment.env
         image: candidates_server
         build:
-            context: .
+            context: ..
             dockerfile: docker/app/Dockerfile
         ports:
             - "8000:8000"
