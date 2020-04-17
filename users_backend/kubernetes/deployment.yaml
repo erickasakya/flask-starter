@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: candidates-backend
+    name: users-backend
     labels:
-        app: candidates-backend
-    namespace: flask-starter
+        app: users-backend
+    namespace: example
 spec:
     replicas: 1
     selector:
         matchLabels:
-            app: candidates-backend
+            app: users-backend
     template:
         metadata:
             labels:
-                app: candidates-backend
+                app: users-backend
         spec:
             containers:
-                - name: candidates-backend-service
-                  image: candidates_server:latest
+                - name: users-backend-service
+                  image: users_server:latest
                   imagePullPolicy: Never
                   ports:
                      - containerPort: 8000
@@ -36,7 +36,6 @@ spec:
                       - name: POSTGRES_HOST
                         value: "127.0.0.1"
 
-                - name: candidates-backend-db
-                  image: candidates_backend_db:latest
+                - name: users-backend-db
+                  image: users_backend_db:latest
                   imagePullPolicy: Never
-
