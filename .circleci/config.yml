@@ -83,22 +83,21 @@ jobs:
         only: circle-ci-monorepo
     machine: true
     steps:
-      steps:
-        - checkout
-        - run: *install-compose
-        - run:
-            name: Run tests and static code analysis
-            command: |
-              cd candidates_backend
-              docker-compose build db
-              docker-compose build test-postgresql
-              docker-compose run test-postgresql
-              docker-compose build static-analysis
-              docker-compose run static-analysis
-        - run:
-            name: Build and push Docker image to development
-            command: |
-              docker-compose build server
-              docker tag candidates_server:latest nextonlabs/candidates-backend:dev
-              docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
-              docker push nextonlabs/candidates-backend:dev
+      - checkout
+      - run: *install-compose
+      - run:
+          name: Run tests and static code analysis
+          command: |
+            cd candidates_backend
+            docker-compose build db
+            docker-compose build test-postgresql
+            docker-compose run test-postgresql
+            docker-compose build static-analysis
+            docker-compose run static-analysis
+      - run:
+          name: Build and push Docker image to development
+          command: |
+            docker-compose build server
+            docker tag candidates_server:latest nextonlabs/candidates-backend:dev
+            docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
+            docker push nextonlabs/candidates-backend:dev
