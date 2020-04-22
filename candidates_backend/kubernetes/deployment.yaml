@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: candidates-backend
+    labels:
+        app: candidates-backend
+    namespace: flask-starter
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: candidates-backend
+    template:
+        metadata:
+            labels:
+                app: candidates-backend
+        spec:
+            containers:
+                - name: candidates-backend-service
+                  image: candidates_server:latest
+                  imagePullPolicy: Never
+                  ports:
+                     - containerPort: 8000
+                  env:
+                      - name: DATABASE_ENGINE
+                        value: POSTGRESQL
+                      - name: POSTGRES_DB
+                        value: candidates
+                      - name: POSTGRES_USER
+                        value: postgres
+                      - name: POSTGRES_PASSWORD
+                        value: somepassword
+                      - name: POSTGRES_PORT
+                        value: "5432"
+                      - name: POSTGRES_HOST
+                        value: "127.0.0.1"
+
+                - name: candidates-backend-db
+                  image: candidates_backend_db:latest
+                  imagePullPolicy: Never
+
