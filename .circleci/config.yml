@@ -97,6 +97,7 @@ jobs:
       - run:
           name: Build and push Docker image to development
           command: |
+            cd candidates_backend
             docker-compose build server
             docker tag candidates_server:latest nextonlabs/candidates-backend:dev
             docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
