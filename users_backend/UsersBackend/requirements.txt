@@ -13,3 +13,4 @@ psycopg2==2.8.2
 flake8==3.7.7
 prometheus_client==0.7.1
 prometheus-flask-exporter==0.9.1
+Werkzeug==0.16.1
