@@ -95,7 +95,7 @@ workflows:
           microservice_name: candidates_backend
       - push:
           name: candidates_backend-push
-          package_name: candidates_backend
+          microservice_name: candidates_backend
           requires:
             - candidates_backend-build
 
@@ -107,6 +107,6 @@ workflows:
           microservice_name: users_backend
       - push:
           name: users_backend-push
-          package_name: users_backend
+          microservice_name: users_backend
           requires:
             - users_backend-build
