@@ -55,7 +55,7 @@ jobs:
       - run:
           name: Run tests and static code analysis
           command: |
-            cd parameters.microservice_name
+            cd << parameters.microservice_name >>
             docker-compose build db
             docker-compose build test-postgresql
             docker-compose run test-postgresql
@@ -72,7 +72,7 @@ jobs:
       - run:
           name: Build and push Docker image to development
           command: |
-            cd parameters.microservice_name
+            cd << parameters.microservice_name >>
             docker-compose build server
             docker tag parameters.microservice_name:latest nextonlabs/parameters.microservice_name:dev
             docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
