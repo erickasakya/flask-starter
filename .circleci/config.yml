@@ -21,6 +21,10 @@ parameters:
     type: boolean
     default: true
 
+  terraform_setup:
+    type: boolean
+    default: false
+
   # A parameter per micro-service
   candidates_backend:
     type: boolean

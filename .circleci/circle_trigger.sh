@@ -50,9 +50,9 @@ if [[ ${LAST_COMPLETED_BUILD_SHA} == "null" ]] || [[ $(git cat-file -t $LAST_COM
 fi
 
 ############################################
-## 2. Changed packages
+## 2. Changed microservices
 ############################################
-PACKAGES=$(ls ${ROOT} -l | grep ^d | awk '{print $9}')
+MICROSERVICES=$(ls ${ROOT} -l | grep ^d | awk '{print $9}')
 echo "Searching for changes since commit [${LAST_COMPLETED_BUILD_SHA:0:7}] ..."
 
 ## The CircleCI API parameters object
@@ -70,40 +70,40 @@ FAILED_WORKFLOWS=$(cat circle.json \
 
 echo "Workflows currently in failed status: (${FAILED_WORKFLOWS[@]})."
 
-for PACKAGE in ${PACKAGES[@]}
+for MICROSERVICE in ${MICROSERVICES[@]}
 do
-  PACKAGE_PATH=${ROOT#.}/$PACKAGE
-  LATEST_COMMIT_SINCE_LAST_BUILD=$(git log -1 $LAST_COMPLETED_BUILD_SHA..$CIRCLE_SHA1 --format=format:%H --full-diff ${PACKAGE_PATH#/})
+  MICROSERVICE_PATH=${ROOT#.}/$MICROSERVICE
+  LATEST_COMMIT_SINCE_LAST_BUILD=$(git log -1 $LAST_COMPLETED_BUILD_SHA..$CIRCLE_SHA1 --format=format:%H --full-diff ${MICROSERVICE_PATH#/})
 
   if [[ -z "$LATEST_COMMIT_SINCE_LAST_BUILD" ]]; then
     INCLUDED=0
     for FAILED_BUILD in ${FAILED_WORKFLOWS[@]}
     do
-      if [[ "$PACKAGE" == "$FAILED_BUILD" ]]; then
+      if [[ "$MICROSERVICE" == "$FAILED_BUILD" ]]; then
         INCLUDED=1
-        PARAMETERS+=", \"$PACKAGE\":true"
+        PARAMETERS+=", \"$MICROSERVICE\":true"
         COUNT=$((COUNT + 1))
-        echo -e "\e[36m  [+] ${PACKAGE} \e[21m (included because failed since last build)\e[0m"
+        echo -e "\e[36m  [+] ${MICROSERVICE} \e[21m (included because failed since last build)\e[0m"
         break
       fi
     done
 
     if [[ "$INCLUDED" == "0" ]]; then
-      echo -e "\e[90m  [-] $PACKAGE \e[0m"
+      echo -e "\e[90m  [-] $MICROSERVICE \e[0m"
     fi
   else
-    PARAMETERS+=", \"$PACKAGE\":true"
+    PARAMETERS+=", \"$MICROSERVICE\":true"
     COUNT=$((COUNT + 1))
-    echo -e "\e[36m  [+] ${PACKAGE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
+    echo -e "\e[36m  [+] ${MICROSERVICE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
   fi
 done
 
 if [[ $COUNT -eq 0 ]]; then
-  echo -e "\e[93mNo changes detected in packages. Skip triggering workflows.\e[0m"
+  echo -e "\e[93mNo changes detected in microservices. Skip triggering workflows.\e[0m"
   exit 0
 fi
 
-echo "Changes detected in ${COUNT} package(s)."
+echo "Changes detected in ${COUNT} microservices."
 
 ############################################
 ## 3. CicleCI REST API call
