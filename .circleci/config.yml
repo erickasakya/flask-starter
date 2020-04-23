@@ -1,0 +1,126 @@
+version: 2.1
+
+# Shared step for docker-compose installation
+_run:
+  install-compose: &install-compose
+      command: |
+        sudo rm /usr/local/bin/docker-compose
+        curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+        chmod +x docker-compose
+        sudo mv docker-compose /usr/local/bin
+        docker --version
+        docker-compose version
+        export GIT_SHA=`git rev-parse --short HEAD`
+        echo "Building commit $GIT_SHA"
+      environment:
+        DOCKER_COMPOSE_VERSION: 1.23.2
+
+parameters:
+  # This parameter is used to trigger the main workflow
+  trigger:
+    type: boolean
+    default: true
+
+  # A parameter per micro-service
+  candidates_backend:
+    type: boolean
+    default: false
+
+  users_backend:
+    type: boolean
+    default: false
+
+executors:
+  node:
+    docker:
+      - image: circleci/node
+
+jobs:
+  trigger-workflows:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Trigger workflows
+          command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
+
+  build:
+    parameters:
+      microservice_name:
+        type: string
+    machine: true
+    steps:
+      - checkout
+      - run: *install-compose
+      - run:
+          name: Run tests and static code analysis
+          command: |
+            cd << parameters.microservice_name >>
+            docker-compose build db
+            docker-compose build test-postgresql
+            docker-compose run test-postgresql
+            docker-compose build static-analysis
+            docker-compose run static-analysis
+  push:
+    parameters:
+      microservice_name:
+        type: string
+      tag_name:
+        type: string
+    machine: true
+    steps:
+      - checkout
+      - run: *install-compose
+      - run:
+          name: Build and push Docker image to development
+          command: |
+            cd << parameters.microservice_name >>
+            docker-compose build server
+            docker tag <<parameters.tag_name>>:latest nextonlabs/<< parameters.microservice_name>>:dev
+            docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
+            docker push nextonlabs/<< parameters.microservice_name >>:dev
+
+workflows:
+  version: 2
+
+  # The main workflow responsible for triggering all other workflows
+  # in which changes are detected.
+  ci:
+    when: << pipeline.parameters.trigger >>
+    jobs:
+      - trigger-workflows
+
+
+  # Workflows defined for each micro-service.
+
+  candidates_backend:
+    when: << pipeline.parameters.candidates_backend >>
+    jobs:
+      - build:
+          name: candidates_backend-build
+          microservice_name: candidates_backend
+      - push:
+          name: candidates_backend-push
+          microservice_name: candidates_backend
+          tag_name: candidates_server
+          filters:
+            branches:
+              only: microservices
+          requires:
+            - candidates_backend-build
+
+  users_backend:
+    when: << pipeline.parameters.users_backend >>
+    jobs:
+      - build:
+          name: users_backend-build
+          microservice_name: users_backend
+      - push:
+          name: users_backend-push
+          microservice_name: users_backend
+          tag_name: users_server
+          filters:
+            branches:
+              only: microservices
+          requires:
+            - users_backend-build

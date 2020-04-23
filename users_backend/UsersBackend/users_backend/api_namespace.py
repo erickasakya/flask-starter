@@ -1,10 +1,9 @@
 import http.client
-from flask_restplus import Namespace, Resource, fields
+from flask_restplus import Namespace, Resource
 from users_backend import config
 from users_backend.models import UserModel
 from users_backend.token_validation import validate_token_header
 from users_backend.token_validation import generate_token_header
-from users_backend.db import db
 from flask import abort
 
 api_namespace = Namespace('api', description='API operations')

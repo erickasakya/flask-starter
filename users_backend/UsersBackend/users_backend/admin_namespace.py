@@ -20,7 +20,7 @@ user_parser = admin_namespace.parser()
 user_parser.add_argument('username', type=str, required=True,
                          help='Username')
 user_parser.add_argument('password', type=str, required=True,
-                          help='Password')
+                         help='Password')
 
 
 @admin_namespace.route('/users/')
