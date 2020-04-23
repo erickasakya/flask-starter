@@ -74,7 +74,7 @@ jobs:
           command: |
             cd << parameters.microservice_name >>
             docker-compose build server
-            docker tag << parameters.microservice_name >>:latest nextonlabs/<< parameters.microservice_name >>:dev
+            docker tag nextonlabs/<< parameters.microservice_name >>:dev
             docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
             docker push nextonlabs/<< parameters.microservice_name >>:dev
 
