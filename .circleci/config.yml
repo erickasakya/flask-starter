@@ -103,6 +103,9 @@ workflows:
           name: candidates_backend-push
           microservice_name: candidates_backend
           tag_name: candidates_server
+          filters:
+            branches:
+              only: microservices
           requires:
             - candidates_backend-build
 
@@ -116,5 +119,8 @@ workflows:
           name: users_backend-push
           microservice_name: users_backend
           tag_name: users_server
+          filters:
+            branches:
+              only: microservices
           requires:
             - users_backend-build
