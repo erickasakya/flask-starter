@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.2
+
 # Shared step for docker-compose installation
 _run:
   install-compose: &install-compose
@@ -25,12 +28,20 @@ parameters:
     type: boolean
     default: false
 
+  kubernetes:
+    type: boolean
+    default: false
+
   # A parameter per micro-service
   candidates_backend:
     type: boolean
     default: false
 
   users_backend:
+    type: boolean
+    default: false
+
+  frontend:
     type: boolean
     default: false
 
@@ -128,3 +139,14 @@ workflows:
               only: microservices
           requires:
             - users_backend-build
+
+  frontend:
+    when: << pipeline.parameters.frontend >>
+    jobs:
+      - push:
+          name: frontend-push
+          microservice_name: frontend
+          tag_name: frontend_server
+          filters:
+            branches:
+              only: microservices

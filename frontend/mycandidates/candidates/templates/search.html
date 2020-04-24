@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for candidate in candidates %}
+<div class="card border-dark mt-2">
+  <div class="card-body">
+    <h6 class="card-subtitle mb-2">
+      {{candidate.username}}
+      <small class="text-muted">{{candidate.timestamp}}</small>
+    </h6>
+    <p class="card-text">{{candidate.name}}</p>
+    <p class="card-text">{{candidate.title}}</p>
+    <p class="card-text">{{candidate.location}}</p>
+    <p class="card-text">{{candidate.profile_url}}</p>
+  </div>
+</div>
+{% empty %}
+No results for your search
+{% endfor %}
+
+
+{% endblock %}
