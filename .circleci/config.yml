@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@0.0.2
+  aws-ecr: circleci/aws-ecr@6.8.2
 
 # Shared step for docker-compose installation
 _run:
@@ -92,8 +92,12 @@ jobs:
             cd << parameters.microservice_name >>
             docker-compose build server
             docker tag <<parameters.tag_name>>:latest nextonlabs/<< parameters.microservice_name>>:dev
-            docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
-            docker push nextonlabs/<< parameters.microservice_name >>:dev
+      - aws-ecr/ecr-login:
+          region: ${AWS_DEFAULT_REGION}
+      - aws-ecr/push-image:
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: << parameters.microservice_name >>
+          tag: "latest,dev"
 
 workflows:
   version: 2
