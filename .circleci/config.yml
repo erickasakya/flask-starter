@@ -124,7 +124,7 @@ workflows:
           tag_name: candidates_server
           filters:
             branches:
-              only: microservices
+              only: ecr-kubernetes-deployment
           requires:
             - candidates_backend-build
 

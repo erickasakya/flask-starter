@@ -1,7 +1,7 @@
 Candidates Service
 =======
 
-This code is our example of Candidates Micro Service. It is a Flask application (https://flask.palletsprojects.com/) that creates a RESTFul backend to store job candidates.
+Candidates Micro Service. It is a Flask application (https://flask.palletsprojects.com/) that creates a RESTFul backend to store job candidates.
 
 Set it up
 ------
