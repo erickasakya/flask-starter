@@ -95,7 +95,7 @@ jobs:
       - aws-ecr/ecr-login:
           region: AWS_DEFAULT_REGION
       - aws-ecr/push-image:
-          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          account-url: AWS_ECR_ACCOUNT_URL
           repo: << parameters.microservice_name >>
           tag: "latest,dev"
 
