@@ -93,7 +93,7 @@ jobs:
             docker-compose build server
             docker tag <<parameters.tag_name>>:latest nextonlabs/<< parameters.microservice_name>>:dev
       - aws-ecr/ecr-login:
-          profile: "${AWS_PROFILE}"
+          profile-name: "${AWS_PROFILE}"
           region: AWS_DEFAULT_REGION
       - aws-ecr/push-image:
           account-url: AWS_ECR_ACCOUNT_URL
