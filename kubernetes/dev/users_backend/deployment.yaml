@@ -18,8 +18,8 @@ spec:
         spec:
             containers:
                 - name: users-backend-service
-                  image: users_server:latest
-                  imagePullPolicy: Never
+                  image: 424423231904.dkr.ecr.us-east-1.amazonaws.com/users_backend:dev
+                  imagePullPolicy: Always
                   ports:
                      - containerPort: 8000
                   env:

@@ -123,7 +123,7 @@ jobs:
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: kubernetes/namespace.yaml
-          resource-name: namespace/flask-starter-namespace
+          resource-name: namespace/flask-starter
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: kubernetes/dev/<< parameters.microservice_name >>/deployment.yaml
