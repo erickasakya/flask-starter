@@ -88,13 +88,20 @@ jobs:
       - checkout
       - run: *install-compose
       - run:
-          name: Build and push Docker image to development
+          name: Build Docker image
           command: |
             cd << parameters.microservice_name >>
             docker-compose build server
             docker tag <<parameters.tag_name>>:latest "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>:dev
       - aws-cli/install
       - aws-cli/setup
+      - run:
+          name: Create ECR repository
+          command: |
+            aws ecr create-repository \
+                --repository-name << parameters.microservice_name >> \
+                --image-scanning-configuration scanOnPush=true \
+                --region ${AWS_DEFAULT_REGION}
       - aws-ecr/ecr-login
       - aws-ecr/push-image:
           account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
