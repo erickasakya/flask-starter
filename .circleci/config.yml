@@ -126,15 +126,17 @@ workflows:
       - build:
           name: candidates_backend-build
           microservice_name: candidates_backend
-      - push:
-          name: candidates_backend-push
-          microservice_name: candidates_backend
-          tag_name: candidates_server
+      - aws-ecr/build_and_push_image:
+          requires:
+            - candidates_backend-build
           filters:
             branches:
               only: ecr-kubernetes-deployment
-          requires:
-            - candidates_backend-build
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: "candidates_backend"
+          region: ${AWS_DEFAULT_REGION}
+          tag: "latest,dev"
+
 
   users_backend:
     when: << pipeline.parameters.users_backend >>
