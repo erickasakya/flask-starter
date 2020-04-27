@@ -108,6 +108,10 @@ jobs:
           account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
           repo: << parameters.microservice_name >>
           tag: "dev"
+      - run:
+          name: Remove all untagged images
+          command: |
+            aws ecr describe-repositories --output text | awk '{print $5}' | while read line; do  aws ecr list-images --repository-name $line --filter tagStatus=UNTAGGED --query 'imageIds[*]' --output text | while read imageId; do aws ecr batch-delete-image --repository-name $line --image-ids imageDigest=$imageId; done; done
 
   deployment:
     parameters:
@@ -121,13 +125,12 @@ jobs:
           cluster-name: "flask-starter-cluster"
           install-kubectl: true
       - kubernetes/create-or-update-resource:
-          get-rollout-status: true
           resource-file-path: kubernetes/namespace.yaml
           resource-name: namespace/flask-starter
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: kubernetes/dev/<< parameters.microservice_name >>/deployment.yaml
-          resource-name: deployment/<< parameters.microservice_name >>-deployment
+          resource-name: deployment/<< parameters.microservice_name >>
 
 
 workflows:
