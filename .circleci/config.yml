@@ -92,6 +92,12 @@ jobs:
             cd << parameters.microservice_name >>
             docker-compose build server
             docker tag <<parameters.tag_name>>:latest nextonlabs/<< parameters.microservice_name>>:dev
+      - aws-cli/install
+      - aws-cli/configure:
+          profile-name: "${AWS_PROFILE}"
+          aws-access-key-id: $AWS_ACCESS_KEY_ID
+          aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
+          region: $AWS_DEFAULT_REGION
       - aws-ecr/ecr-login:
           profile-name: "${AWS_PROFILE}"
           region: AWS_DEFAULT_REGION
