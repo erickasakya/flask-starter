@@ -92,14 +92,14 @@ jobs:
           command: |
             cd << parameters.microservice_name >>
             docker-compose build server
-            docker tag <<parameters.tag_name>>:latest nextonlabs/<< parameters.microservice_name>>:dev
+            docker tag <<parameters.tag_name>>:latest "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>:dev
       - aws-cli/install
       - aws-cli/setup
       - aws-ecr/ecr-login
       - aws-ecr/push-image:
           account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
           repo: << parameters.microservice_name >>
-          tag: "latest"
+          tag: "dev"
 
 workflows:
   version: 2
