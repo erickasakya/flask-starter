@@ -100,7 +100,7 @@ jobs:
       - run:
           name: Create ECR repository
           command: |
-            aws ecr create-repository \
+            aws ecr describe-repositories --repository-names << parameters.microservice_name >> || aws ecr create-repository \
                 --repository-name << parameters.microservice_name >> \
                 --region ${AWS_DEFAULT_REGION}
       - aws-ecr/ecr-login
