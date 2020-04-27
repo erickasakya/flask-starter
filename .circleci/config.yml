@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.2
+  aws-cli: circleci/aws-cli@1.0.0
+
 # Shared step for docker-compose installation
 _run:
   install-compose: &install-compose
@@ -21,12 +25,24 @@ parameters:
     type: boolean
     default: true
 
+  terraform_setup:
+    type: boolean
+    default: false
+
+  kubernetes:
+    type: boolean
+    default: false
+
   # A parameter per micro-service
   candidates_backend:
     type: boolean
     default: false
 
   users_backend:
+    type: boolean
+    default: false
+
+  frontend:
     type: boolean
     default: false
 
@@ -72,13 +88,24 @@ jobs:
       - checkout
       - run: *install-compose
       - run:
-          name: Build and push Docker image to development
+          name: Build Docker image
           command: |
             cd << parameters.microservice_name >>
             docker-compose build server
-            docker tag <<parameters.tag_name>>:latest nextonlabs/<< parameters.microservice_name>>:dev
-            docker login -u $DOCKER_NEXTON_USER -p $DOCKER_NEXTON_PASS
-            docker push nextonlabs/<< parameters.microservice_name >>:dev
+            docker tag <<parameters.tag_name>>:latest "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>:dev
+      - aws-cli/install
+      - aws-cli/setup
+      - run:
+          name: Create ECR repository
+          command: |
+            aws ecr create-repository \
+                --repository-name << parameters.microservice_name >> \
+                --region ${AWS_DEFAULT_REGION}
+      - aws-ecr/ecr-login
+      - aws-ecr/push-image:
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: << parameters.microservice_name >>
+          tag: "dev"
 
 workflows:
   version: 2
@@ -105,9 +132,10 @@ workflows:
           tag_name: candidates_server
           filters:
             branches:
-              only: microservices
+              only: ecr-kubernetes-deployment
           requires:
             - candidates_backend-build
+
 
   users_backend:
     when: << pipeline.parameters.users_backend >>
@@ -124,3 +152,14 @@ workflows:
               only: microservices
           requires:
             - users_backend-build
+
+  frontend:
+    when: << pipeline.parameters.frontend >>
+    jobs:
+      - push:
+          name: frontend-push
+          microservice_name: frontend
+          tag_name: frontend_server
+          filters:
+            branches:
+              only: microservices

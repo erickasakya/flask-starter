@@ -2,14 +2,14 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-    name: candidates-backend-ingress
+    name: users-backend-ingress
     namespace: flask-starter
 spec:
     rules:
-        - host: candidates.example.local
+        - host: users.flask.local
           http:
             paths:
               - backend:
-                  serviceName: candidates-service
+                  serviceName: users-service
                   servicePort: 80
                 path: /

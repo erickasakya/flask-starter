@@ -5,7 +5,7 @@ metadata:
     name: users-backend
     labels:
         app: users-backend
-    namespace: example
+    namespace: flask-starter
 spec:
     replicas: 1
     selector:
