@@ -122,6 +122,10 @@ jobs:
           install-kubectl: true
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
+          resource-file-path: kubernetes/namespace.yaml
+          resource-name: namespace/flask-starter-namespace
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
           resource-file-path: kubernetes/dev/<< parameters.microservice_name >>/deployment.yaml
           resource-name: deployment/<< parameters.microservice_name >>-deployment
 
@@ -175,7 +179,7 @@ workflows:
           tag_name: users_server
           filters:
             branches:
-              only: microservices
+              only: eks-integration
           requires:
             - users_backend-build
 
@@ -185,7 +189,7 @@ workflows:
       - push:
           name: frontend-push
           microservice_name: frontend
-          tag_name: frontend_server
+          tag_name: candidates_frontend
           filters:
             branches:
-              only: microservices
+              only: eks-integration
