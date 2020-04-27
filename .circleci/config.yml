@@ -151,7 +151,7 @@ workflows:
           tag_name: candidates_server
           filters:
             branches:
-              only: ecr-kubernetes-deployment
+              only: eks-integration
           requires:
             - candidates_backend-build
       - deployment:
@@ -159,7 +159,7 @@ workflows:
           microservice_name: candidates_backend
           filters:
             branches:
-              only: ecr-kubernetes-deployment
+              only: eks-integration
           requires:
             - candidates_backend-push
 
