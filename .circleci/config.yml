@@ -100,7 +100,6 @@ jobs:
           command: |
             aws ecr create-repository \
                 --repository-name << parameters.microservice_name >> \
-                --image-scanning-configuration scanOnPush=true \
                 --region ${AWS_DEFAULT_REGION}
       - aws-ecr/ecr-login
       - aws-ecr/push-image:
