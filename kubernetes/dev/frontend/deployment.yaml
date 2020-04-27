@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend
+    labels:
+        app: frontend
+    namespace: flask-starter
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: frontend
+    template:
+        metadata:
+            labels:
+                app: frontend
+        spec:
+            containers:
+                - name: frontend-service
+                  image: candidates_frontend:latest
+                  imagePullPolicy: Always
+                  ports:
+                     - containerPort: 8000
+                  env:
+                      - name: CANDIDATES_BACKEND_URL
+                        value: http://candidates-service
+                      - name: USER_BACKEND_URL
+                        value: http://users-service

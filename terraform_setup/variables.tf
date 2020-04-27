@@ -1,7 +1,7 @@
 # Variables Configuration
 
 variable "cluster-name" {
-  default     = "eks-cluster"
+  default     = "flask-starter-cluster"
   type        = string
   description = "The name of your EKS Cluster"
 }

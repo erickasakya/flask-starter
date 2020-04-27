@@ -3,6 +3,8 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@0.0.2
   aws-cli: circleci/aws-cli@1.0.0
+  aws-eks: circleci/aws-eks@0.2.7
+  kubernetes: circleci/kubernetes@0.4.0
 
 # Shared step for docker-compose installation
 _run:
@@ -92,7 +94,7 @@ jobs:
           command: |
             cd << parameters.microservice_name >>
             docker-compose build server
-            docker tag <<parameters.tag_name>>:latest "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>:dev
+            docker tag "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>:dev
       - aws-cli/install
       - aws-cli/setup
       - run:
@@ -106,6 +108,23 @@ jobs:
           account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
           repo: << parameters.microservice_name >>
           tag: "dev"
+
+  deployment:
+    parameters:
+      microservice_name:
+        type: string
+    machine: true
+    steps:
+      - checkout
+      - kubernetes/install
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: "flask-starter-cluster"
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: kubernetes/dev/<< parameters.microservice_name >>/deployment.yaml
+          resource-name: deployment/<< parameters.microservice_name >>-deployment
+
 
 workflows:
   version: 2
@@ -135,7 +154,14 @@ workflows:
               only: ecr-kubernetes-deployment
           requires:
             - candidates_backend-build
-
+      - deployment:
+          name: candidates_backend-deployment
+          microservice_name: candidates_backend
+          filters:
+            branches:
+              only: ecr-kubernetes-deployment
+          requires:
+            - candidates_backend-push
 
   users_backend:
     when: << pipeline.parameters.users_backend >>

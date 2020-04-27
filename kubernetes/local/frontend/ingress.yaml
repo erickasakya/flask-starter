@@ -1,0 +1,15 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+    name: frontend-ingress
+    namespace: flask-starter
+spec:
+    rules:
+        - host: frontend.flask.local
+          http:
+            paths:
+              - backend:
+                  serviceName: frontend-service
+                  servicePort: 80
+                path: /
