@@ -121,7 +121,7 @@ workflows:
           account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
           repo: "candidates_backend"
           region: ${AWS_DEFAULT_REGION}
-          tag: "latest,dev"
+          tag: "latest"
 
 
   users_backend:
