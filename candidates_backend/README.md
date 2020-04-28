@@ -40,4 +40,4 @@ Run the unit tests with
 Dependencies
 ------
 
-CandidatesBackend uses Flask as a web framework, Flask REST Plus for creating the interface, and SQLAlchemy to handle the database models. It uses a SQLlite database for local development.
+CandidatesBackend uses Flask as a web framework, Flask RESTPlus for creating the interface, and SQLAlchemy to handle the database models. It uses a SQLlite database for local development.

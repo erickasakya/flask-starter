@@ -25,7 +25,6 @@ There are a couple of users created in the system, `agustina`, `ariel`, `cristia
 
 You can log in as any of them, add more candidates, and search for all the candidates in the system. No need to be logged to search.
 
-
 Dependencies
 ------
 

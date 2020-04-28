@@ -141,9 +141,11 @@ jobs:
       - kubernetes/create-or-update-resource:
           resource-file-path: kubernetes/namespace.yaml
           resource-name: namespace/flask-starter
-      - kubernetes/create-or-update-resource:
-          resource-file-path: kubernetes/dev/<< parameters.microservice_name >>/deployment.yaml
-          resource-name: deployment/<< parameters.microservice_name >>
+      - run:
+          name: Apply kubernetes scripts into the cluster
+          command: |
+            cd kubernetes/dev/<< parameters.microservice_name >>
+            kubectl apply -f . --recursive
 
 
 workflows:
