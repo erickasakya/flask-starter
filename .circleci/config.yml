@@ -111,8 +111,8 @@ jobs:
           repo: << parameters.microservice_name >>
           tag: "dev"
       - run:
-          - name: Build DB image and push it if required
-          - command: |
+          name: Build DB image and push it if required
+          command: |
               cd << parameters.microservice_name >>
               if [ <<parameters.build_db>> == "true" ]; then
                 docker-compose build db
