@@ -200,6 +200,14 @@ workflows:
               only: eks-integration
           requires:
             - users_backend-build
+      - deployment:
+          name: users_backend-deployment
+          microservice_name: users_backend
+          filters:
+            branches:
+              only: eks-integration
+          requires:
+            - users_backend-push
 
   frontend:
     when: << pipeline.parameters.frontend >>
@@ -212,3 +220,11 @@ workflows:
           filters:
             branches:
               only: eks-integration
+      - deployment:
+          name: frontend-deployment
+          microservice_name: frontend
+          filters:
+            branches:
+              only: eks-integration
+          requires:
+            - frontend-push

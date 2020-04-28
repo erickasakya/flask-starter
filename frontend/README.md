@@ -10,8 +10,7 @@ Use docker-compose to build the service
 
     $ docker-compose build
 
-Configure the `environment.env` file to point to the users and candidates backend. Use the
-IP on your local machine.
+Configure the `environment.env` file to point to the users and candidates backend.
 
 
 Up the service
