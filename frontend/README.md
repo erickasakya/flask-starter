@@ -3,8 +3,6 @@ Monolith example
 
 This code is an evolution from the Monolith. It is a Django application (https://www.djangoproject.com/) that creates a website for candidates management. It connects to both the users backend and the candidates backend.
 
-**THIS IS AN EXAMPLE WEBSITE**
-
 Set it up
 ------
 
