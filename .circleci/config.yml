@@ -3,6 +3,8 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@0.0.2
   aws-cli: circleci/aws-cli@1.0.0
+  aws-eks: circleci/aws-eks@0.2.7
+  kubernetes: circleci/kubernetes@0.4.0
 
 # Shared step for docker-compose installation
 _run:
@@ -83,6 +85,8 @@ jobs:
         type: string
       tag_name:
         type: string
+      build_db:
+        type: boolean
     machine: true
     steps:
       - checkout
@@ -98,7 +102,7 @@ jobs:
       - run:
           name: Create ECR repository
           command: |
-            aws ecr create-repository \
+            aws ecr describe-repositories --repository-names << parameters.microservice_name >> || aws ecr create-repository \
                 --repository-name << parameters.microservice_name >> \
                 --region ${AWS_DEFAULT_REGION}
       - aws-ecr/ecr-login
@@ -106,6 +110,43 @@ jobs:
           account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
           repo: << parameters.microservice_name >>
           tag: "dev"
+      - run:
+          name: Build DB image and push it if required
+          command: |
+            cd << parameters.microservice_name >>
+            if [ <<parameters.build_db>> == "true" ]; then
+              docker-compose build db
+              aws ecr describe-repositories --repository-names << parameters.microservice_name >>_db || aws ecr create-repository \
+                                    --repository-name << parameters.microservice_name >>_db \
+                                    --region ${AWS_DEFAULT_REGION}
+              docker tag <<parameters.microservice_name>>_db:latest "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>_db:dev
+              docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>_db:dev
+            fi
+      - run:
+          name: Remove all untagged images
+          command: |
+            aws ecr describe-repositories --output text | awk '{print $5}' | while read line; do  aws ecr list-images --repository-name $line --filter tagStatus=UNTAGGED --query 'imageIds[*]' --output text | while read imageId; do aws ecr batch-delete-image --repository-name $line --image-ids imageDigest=$imageId; done; done
+
+  deployment:
+    parameters:
+      microservice_name:
+        type: string
+    machine: true
+    steps:
+      - checkout
+      - kubernetes/install
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: "flask-starter-cluster"
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          resource-file-path: kubernetes/namespace.yaml
+          resource-name: namespace/flask-starter
+      - run:
+          name: Apply kubernetes scripts into the cluster
+          command: |
+            cd kubernetes/dev/<< parameters.microservice_name >>
+            kubectl apply -f . --recursive
+
 
 workflows:
   version: 2
@@ -128,14 +169,22 @@ workflows:
           microservice_name: candidates_backend
       - push:
           name: candidates_backend-push
+          build_db: true
           microservice_name: candidates_backend
           tag_name: candidates_server
           filters:
             branches:
-              only: ecr-kubernetes-deployment
+              only: eks-integration
           requires:
             - candidates_backend-build
-
+      - deployment:
+          name: candidates_backend-deployment
+          microservice_name: candidates_backend
+          filters:
+            branches:
+              only: eks-integration
+          requires:
+            - candidates_backend-push
 
   users_backend:
     when: << pipeline.parameters.users_backend >>
@@ -145,13 +194,22 @@ workflows:
           microservice_name: users_backend
       - push:
           name: users_backend-push
+          build_db: true
           microservice_name: users_backend
           tag_name: users_server
           filters:
             branches:
-              only: microservices
+              only: eks-integration
           requires:
             - users_backend-build
+      - deployment:
+          name: users_backend-deployment
+          microservice_name: users_backend
+          filters:
+            branches:
+              only: eks-integration
+          requires:
+            - users_backend-push
 
   frontend:
     when: << pipeline.parameters.frontend >>
@@ -159,7 +217,16 @@ workflows:
       - push:
           name: frontend-push
           microservice_name: frontend
-          tag_name: frontend_server
+          build_db: false
+          tag_name: candidates_frontend
           filters:
             branches:
-              only: microservices
+              only: eks-integration
+      - deployment:
+          name: frontend-deployment
+          microservice_name: frontend
+          filters:
+            branches:
+              only: eks-integration
+          requires:
+            - frontend-push

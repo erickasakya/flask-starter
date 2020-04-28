@@ -9,8 +9,11 @@ if __name__ == '__main__':
     # Create some test data
     test_data = [
         # username, timestamp, text
-        ('bruce', "bruce", "1962-05-01 00:00:00Z"),
-        ('stephen', "stephen", "1963-06-01 00:00:00Z"),
+        ('fabricio', "password", "1962-05-01 00:00:00Z"),
+        ('mariano', "password", "1963-06-01 00:00:00Z"),
+        ('ariel', "password", "1962-05-01 00:00:00Z"),
+        ('agustina', "password", "1963-06-01 00:00:00Z"),
+        ('cristian', "password", "1962-05-01 00:00:00Z"),
     ]
     for username, password, creation in test_data:
         user = UserModel(username=username, password=password,
