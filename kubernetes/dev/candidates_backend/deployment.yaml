@@ -37,6 +37,6 @@ spec:
                         value: "127.0.0.1"
 
                 - name: candidates-backend-db
-                  image: candidates_backend_db:latest
-                  imagePullPolicy: Never
+                  image: 424423231904.dkr.ecr.us-east-1.amazonaws.com/candidates_backend_db:dev
+                  imagePullPolicy: Always
 
