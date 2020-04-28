@@ -116,11 +116,11 @@ jobs:
             cd << parameters.microservice_name >>
             if [ <<parameters.build_db>> == "true" ]; then
               docker-compose build db
+              aws ecr describe-repositories --repository-names << parameters.microservice_name >>_db || aws ecr create-repository \
+                                    --repository-name << parameters.microservice_name >>_db \
+                                    --region ${AWS_DEFAULT_REGION}
               docker tag <<parameters.microservice_name>>_db:latest "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>_db:dev
               docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"/<< parameters.microservice_name>>_db:dev
-              aws ecr describe-repositories --repository-names << parameters.microservice_name >>_db || aws ecr create-repository \
-                        --repository-name << parameters.microservice_name >>_db \
-                        --region ${AWS_DEFAULT_REGION}
             fi
       - run:
           name: Remove all untagged images
